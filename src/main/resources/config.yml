@@ -1,0 +1,28 @@
+# Arthur zombieman
+
+# Information
+# %player% is the player that ran
+# the command, %command% is the command
+# that got run, %time% is how long
+# it took to reload in milliseconds.
+
+# The ignored commands has to be
+# with a slash in the start,
+# you can add a command in-game
+# with /csp add-command <command>
+
+# * gets replaced with '
+
+format: '&b[CSP] → &a%player% %command%'
+
+enabled: '&bCommand Spy Plus was enabled'
+disabled: '&bCommand Spy Plus was disabled'
+
+reload-message: '&bCommand Spy Plus was successfully reloaded &7(%time%ms)'
+no-permission: '&cYou don*t have the permission to execute this command!'
+ignored-commands:
+  - /discord
+
+# Permissions:
+# commandspyplus.command.use
+# commandspyplus.see
