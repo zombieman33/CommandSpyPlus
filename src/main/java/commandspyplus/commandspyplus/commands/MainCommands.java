@@ -93,6 +93,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     if (args[1].equalsIgnoreCase("config.yml")) {
                         long startTime = System.currentTimeMillis();
                         plugin.saveResource("config.yml", true);
+                        plugin.reloadConfig();
                         long endTime = System.currentTimeMillis();
                         long time = endTime - startTime + 1;
                         player.sendMessage(ChatColor.GREEN + "You successfully reset " + args[1] + ChatColor.AQUA + " (" + time + "ms)");
@@ -106,6 +107,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     } else if (args[1].equalsIgnoreCase("all")) {
                         long startTime = System.currentTimeMillis();
                         plugin.saveResource("config.yml", true);
+                        plugin.reloadConfig();
                         plugin.saveResource("playerData.yml", true);
                         long endTime = System.currentTimeMillis();
                         long time = endTime - startTime + 1;
