@@ -2,9 +2,6 @@ package commandspyplus.commandspyplus.commands;
 
 import commandspyplus.commandspyplus.CommandSpyPlus;
 import commandspyplus.commandspyplus.utils.ColorUtils;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -12,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -21,25 +19,11 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class MainCommands implements CommandExecutor, TabCompleter {
     private final CommandSpyPlus plugin;
-
-    MiniMessage miniMessage = MiniMessage.miniMessage();
-    LegacyComponentSerializer legacyColors = LegacyComponentSerializer.legacyAmpersand();
-    Component helpMessage = miniMessage.deserialize("""
-                    <#33FB13><bold>Command Spy Plus </#33FB13>
-                    <green>
-                    /csp enable <player> ( if you don't put in a player you will see the commands )
-                    
-                    /csp disable <player> ( if you don't put in a player you will not see the commands anymore )
-                    
-                    /csp reload
-                    /csp reset <config.yml, playerData.yml, all> ( resets the configs to the default version )
-                    
-                    /csp add-command <command> ( adds the command to the ignored command list )
-            """);
 
     public MainCommands(CommandSpyPlus plugin) {
         this.plugin = plugin;
@@ -55,18 +39,19 @@ public class MainCommands implements CommandExecutor, TabCompleter {
         File playerDataFile = new File(plugin.getDataFolder(), "playerData.yml");
         FileConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
 
-        if (args.length >= 1) {
-            String pName = player.getName();
-            UUID pUUID = player.getUniqueId();
-            if (args[0].equalsIgnoreCase("help")) {
-                if (player.hasPermission("commandspyplus.command.use")) {
-                    player.sendMessage(helpMessage);
-                } else {
-                    String permissionMessage = plugin.getConfig().getString("no-permission").replace("*", "'").replace("%player%", player.getName());
-                    player.sendMessage(ColorUtils.color(permissionMessage));
-                }
-            } else if (args[0].equalsIgnoreCase("reload")) {
-                if (player.hasPermission("commandspyplus.command.use")) {
+
+        if (player.hasPermission("commandspyplus.command.use")) {
+            if (args.length >= 1) {
+                String pName = player.getName();
+                UUID pUUID = player.getUniqueId();
+                if (args[0].equalsIgnoreCase("help")) {
+                    player.sendMessage(ColorUtils.color("&#33FB13&lCommand Spy Plus"));
+                    player.sendMessage(ColorUtils.color("&#33FB13/csp enable <player> ( if you don't put in a player you will see the commands )"));
+                    player.sendMessage(ColorUtils.color("&#33FB13/csp disable <player> ( if you don't put in a player you will not see the commands anymore )"));
+                    player.sendMessage(ColorUtils.color("&#33FB13/csp reload"));
+                    player.sendMessage(ColorUtils.color("&#33FB13/csp reset <config.yml, playerData.yml, all> ( resets the configs to the default version )"));
+                    player.sendMessage(ColorUtils.color("&#33FB13/csp add-command <command> ( adds the command to the ignored command list"));
+                } else if (args[0].equalsIgnoreCase("reload")) {
                     long startTime = System.currentTimeMillis();
                     try {
                         plugin.reloadConfig();
@@ -84,12 +69,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     } catch (Exception e) {
                         player.sendMessage(ChatColor.RED + "An error occurred while reloading the plugin: " + e.getMessage());
                     }
-                } else {
-                    String permissionMessage = plugin.getConfig().getString("no-permission").replace("*", "'").replace("%player%", player.getName());
-                    player.sendMessage(ColorUtils.color(permissionMessage));
-                }
-            } else if (args[0].equalsIgnoreCase("reset")) {
-                if (player.hasPermission("commandspyplus.command.use")) {
+                } else if (args[0].equalsIgnoreCase("reset")) {
                     if (args[1].equalsIgnoreCase("config.yml")) {
                         long startTime = System.currentTimeMillis();
                         plugin.saveResource("config.yml", true);
@@ -112,14 +92,11 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                         long endTime = System.currentTimeMillis();
                         long time = endTime - startTime + 1;
                         player.sendMessage(ChatColor.GREEN + "You successfully reset all configs " + ChatColor.AQUA + "(" + time + "ms)");
+                    } else {
+                        player.sendMessage(ChatColor.YELLOW + "/csp reset <all, config.yml, playerData.yml>");
                     }
-                } else {
-                    String permissionMessage = plugin.getConfig().getString("no-permission").replace("*", "'").replace("%player%", player.getName());
-                    player.sendMessage(ColorUtils.color(permissionMessage));
-                }
-            } else if (args[0].equalsIgnoreCase("enable")) {
-                boolean wantsEnable = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
-                if (player.hasPermission("commandspyplus.command.use")) {
+                } else if (args[0].equalsIgnoreCase("enable")) {
+                    boolean wantsEnable = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
                     if (!wantsEnable) {
                         String enableMessage = plugin.getConfig().getString("enabled").replace("*", "'").replace("%player%", player.getName());
                         playerDataConfig.set("commandSpyPlus.player." + pUUID + ".csp", true);
@@ -129,13 +106,8 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     } else {
                         player.sendMessage(ChatColor.RED + "You already have this enabled, to disable run /csp disable");
                     }
-                } else {
-                    String permissionMessage = plugin.getConfig().getString("no-permission").replace("*", "'").replace("%player%", player.getName());
-                    player.sendMessage(ColorUtils.color(permissionMessage));
-                }
-            } else if (args[0].equalsIgnoreCase("disable")) {
-                boolean hasEnabled = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
-                if (player.hasPermission("commandspyplus.command.use")) {
+                } else if (args[0].equalsIgnoreCase("disable")) {
+                    boolean hasEnabled = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
                     if (hasEnabled) {
                         String disableMessage = plugin.getConfig().getString("disabled").replace("*", "'").replace("%player%", player.getName());
                         playerDataConfig.set("commandSpyPlus.player." + pUUID + ".csp", false);
@@ -145,12 +117,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     } else {
                         player.sendMessage(ChatColor.RED + "You need to enable command spy first! /csp enable");
                     }
-                } else {
-                    String permissionMessage = plugin.getConfig().getString("no-permission").replace("*", "'").replace("%player%", player.getName());
-                    player.sendMessage(ColorUtils.color(permissionMessage));
-                }
-            } else if (args[0].equalsIgnoreCase("add-command")) {
-                if (player.hasPermission("commandspyplus.command.use")) {
+                } else if (args[0].equalsIgnoreCase("add-command")) {
                     if (args.length < 2) {
                         player.sendMessage(ChatColor.RED + "You need to specify a command.");
                         return true;
@@ -164,10 +131,12 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     plugin.saveConfig();
                     player.sendMessage(ChatColor.GREEN + "You added: " + formatCommand + " to the list of ignored commands");
                 } else {
-                    String permissionMessage = plugin.getConfig().getString("no-permission");
-                    player.sendMessage(ColorUtils.color(permissionMessage));
+                    player.sendMessage(ChatColor.YELLOW + "/csp help");
                 }
             }
+        } else {
+            String permissionMessage = plugin.getConfig().getString("no-permission").replace("*", "'").replace("%player%", player.getName());
+            player.sendMessage(ColorUtils.color(permissionMessage));
         }
         return false;
     }
@@ -188,29 +157,21 @@ public class MainCommands implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             if (player.hasPermission("commandspyplus.command.use")) {
                 completions.add("help");
-            }
-            if (player.hasPermission("commandspyplus.command.use")) {
                 completions.add("add-command");
-            }
-            if (player.hasPermission("commandspyplus.command.use")) {
                 completions.add("reload");
-            }
-            if (player.hasPermission("commandspyplus.command.use")) {
                 completions.add("reset");
-            }
-            if (player.hasPermission("commandspyplus.command.use")) {
                 completions.add("enable");
-            }
-            if (player.hasPermission("commandspyplus.command.use")) {
                 completions.add("disable");
             }
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("reset")) {
-                completions.add("playerData.yml");
-                completions.add("config.yml");
-                completions.add("all");
-            } else if (args[0].equalsIgnoreCase("add-command")) {
-                completions.add("<command>");
+            if (player.hasPermission("commandspyplus.command.use")) {
+                if (args[0].equalsIgnoreCase("reset")) {
+                    completions.add("playerData.yml");
+                    completions.add("config.yml");
+                    completions.add("all");
+                } else if (args[0].equalsIgnoreCase("add-command")) {
+                    completions.add("<command>");
+                }
             }
         }
         return completions;

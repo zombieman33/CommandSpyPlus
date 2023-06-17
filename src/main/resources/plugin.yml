@@ -1,7 +1,7 @@
 name: CommandSpyPlus
 version: '${project.version}'
 main: commandspyplus.commandspyplus.CommandSpyPlus
-api-version: 1.19
+api-version: 1.13
 authors: [ zombieman ]
 description: wanna see what commands your player's are executing? Well now you can.
 commands:

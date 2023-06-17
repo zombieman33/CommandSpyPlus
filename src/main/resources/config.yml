@@ -13,6 +13,9 @@
 
 # * gets replaced with '
 
+# `shouldWorkWithHexCode` means that hex code
+# will work but the suggest command wont
+shouldWorkWithHexCode: false
 format: '&b[CSP] → &a%player% %command%'
 
 enabled: '&bCommand Spy Plus was enabled'
