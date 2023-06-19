@@ -41,9 +41,12 @@ public class MainCommands implements CommandExecutor, TabCompleter {
 
 
         if (player.hasPermission("commandspyplus.command.use")) {
+            String pName = player.getName();
+            UUID pUUID = player.getUniqueId();
+            boolean wantsEnable = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
+            String enableMessage = plugin.getConfig().getString("enabled").replace("*", "'").replace("%player%", player.getName());
+            String disableMessage = plugin.getConfig().getString("disabled").replace("*", "'").replace("%player%", player.getName());
             if (args.length >= 1) {
-                String pName = player.getName();
-                UUID pUUID = player.getUniqueId();
                 if (args[0].equalsIgnoreCase("help")) {
                     player.sendMessage(ColorUtils.color("&#33FB13&lCommand Spy Plus"));
                     player.sendMessage(ColorUtils.color("&#33FB13/csp enable <player> ( if you don't put in a player you will see the commands )"));
@@ -96,9 +99,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                         player.sendMessage(ChatColor.YELLOW + "/csp reset <all, config.yml, playerData.yml>");
                     }
                 } else if (args[0].equalsIgnoreCase("enable")) {
-                    boolean wantsEnable = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
                     if (!wantsEnable) {
-                        String enableMessage = plugin.getConfig().getString("enabled").replace("*", "'").replace("%player%", player.getName());
                         playerDataConfig.set("commandSpyPlus.player." + pUUID + ".csp", true);
                         playerDataConfig.set("commandSpyPlus.player." + pUUID + ".ign", player.getName());
                         player.sendMessage(ColorUtils.color(enableMessage));
@@ -109,7 +110,6 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                 } else if (args[0].equalsIgnoreCase("disable")) {
                     boolean hasEnabled = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
                     if (hasEnabled) {
-                        String disableMessage = plugin.getConfig().getString("disabled").replace("*", "'").replace("%player%", player.getName());
                         playerDataConfig.set("commandSpyPlus.player." + pUUID + ".csp", false);
                         playerDataConfig.set("commandSpyPlus.player." + pUUID + ".ign", pName);
                         player.sendMessage(ColorUtils.color(disableMessage));
@@ -132,6 +132,18 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                     player.sendMessage(ChatColor.GREEN + "You added: " + formatCommand + " to the list of ignored commands");
                 } else {
                     player.sendMessage(ChatColor.YELLOW + "/csp help");
+                }
+            } else {
+                if (!wantsEnable) {
+                    playerDataConfig.set("commandSpyPlus.player." + pUUID + ".csp", true);
+                    playerDataConfig.set("commandSpyPlus.player." + pUUID + ".ign", player.getName());
+                    player.sendMessage(ColorUtils.color(enableMessage));
+                    savePlayerDataConfig(playerDataConfig, playerDataFile);
+                } else {
+                    playerDataConfig.set("commandSpyPlus.player." + pUUID + ".csp", false);
+                    playerDataConfig.set("commandSpyPlus.player." + pUUID + ".ign", player.getName());
+                    player.sendMessage(ColorUtils.color(disableMessage));
+                    savePlayerDataConfig(playerDataConfig, playerDataFile);
                 }
             }
         } else {

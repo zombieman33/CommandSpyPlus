@@ -18,13 +18,12 @@
 shouldWorkWithHexCode: false
 format: '&b[CSP] → &a%player% %command%'
 
-enabled: '&bCommand Spy Plus was enabled'
-disabled: '&bCommand Spy Plus was disabled'
+enabled: '&aCommand Spy Plus was enabled'
+disabled: '&cCommand Spy Plus was disabled'
 
 reload-message: '&bCommand Spy Plus was successfully reloaded &7(%time%ms)'
 no-permission: '&cYou don*t have the permission to execute this command!'
-ignored-commands:
-  - /discord
+ignored-commands: []
 
 # Permissions:
 # commandspyplus.command.use
