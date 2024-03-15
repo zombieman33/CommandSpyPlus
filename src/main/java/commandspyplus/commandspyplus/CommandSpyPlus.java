@@ -1,6 +1,7 @@
 package commandspyplus.commandspyplus;
 
 import commandspyplus.commandspyplus.commands.MainCommands;
+import commandspyplus.commandspyplus.data.PlayerData;
 import commandspyplus.commandspyplus.listeners.CommandSpyListener;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,17 +14,17 @@ public final class CommandSpyPlus extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
 
+        File playerDataFile = new File(getDataFolder(), "playerData.yml");
+
+        if (playerDataFile.exists()) {
+            playerDataFile.delete();
+        }
 
         // Configs
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             getLogger().info("Config file not found, creating...");
             saveResource("config.yml", false);
-        }
-        File playerDataFile = new File(getDataFolder(), "playerData.yml");
-        if (!playerDataFile.exists()) {
-            getLogger().info("Player Data file not found, creating...");
-            saveResource("playerData.yml", false);
         }
 
         // Commands
@@ -34,6 +35,9 @@ public final class CommandSpyPlus extends JavaPlugin {
         // Listeners
         CommandSpyListener commandSpyListener = new CommandSpyListener(this);
         getServer().getPluginManager().registerEvents(commandSpyListener, this);
+
+        // Data
+        new PlayerData();
     }
 
     @Override

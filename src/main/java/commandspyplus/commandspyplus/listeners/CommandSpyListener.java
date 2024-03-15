@@ -1,6 +1,7 @@
 package commandspyplus.commandspyplus.listeners;
 
 import commandspyplus.commandspyplus.CommandSpyPlus;
+import commandspyplus.commandspyplus.data.PlayerData;
 import commandspyplus.commandspyplus.utils.ColorUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -29,41 +30,46 @@ public class CommandSpyListener implements Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        String command = event.getMessage();
+        String command = event.getMessage().split(" ")[0];
 
         List<String> ignoredCommands = plugin.getConfig().getStringList("ignored-commands");
 
-        if (!ignoredCommands.contains(command)) {
-            String format = plugin.getConfig().getString("format");
-            String newFormat = format
-                    .replace("%player%", player.getName())
-                    .replace("%command%", command);
+        for (String ignoredCommand : ignoredCommands) {
+            if (command.startsWith(ignoredCommand)) {
+                return;
+            }
+        }
 
-            File playerDataFile = new File(plugin.getDataFolder(), "playerData.yml");
-            FileConfiguration playerDataConfig = YamlConfiguration.loadConfiguration(playerDataFile);
+        command = event.getMessage();
 
-            TextComponent formatted = new TextComponent(ColorUtils.color(newFormat));
-            formatted.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
-            formatted.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    new ComponentBuilder("Click To Suggest: " + command).color(net.md_5.bungee.api.ChatColor.GRAY).italic(true).create()));
+        String format = plugin.getConfig().getString("format");
+        String newFormat = format
+                .replace("%player%", player.getName())
+                .replace("%command%", command);
 
-            boolean shouldWorkWithHexCode = plugin.getConfig().getBoolean("shouldWorkWithHexCode");
-            if (shouldWorkWithHexCode) {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (onlinePlayer.hasPermission("commandspyplus.see")) {
-                        boolean wantsToSeeCommands = playerDataConfig.getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
-                        if (wantsToSeeCommands) {
-                            onlinePlayer.sendMessage(ColorUtils.color(newFormat));
-                        }
+        FileConfiguration playerDataConfig = PlayerData.getPlayerDataConfig(plugin, player.getUniqueId());
+
+        TextComponent formatted = new TextComponent(ColorUtils.color(newFormat));
+        formatted.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+        formatted.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder("Click To Suggest: " + command).color(net.md_5.bungee.api.ChatColor.GRAY).italic(true).create()));
+
+        boolean shouldWorkWithHexCode = plugin.getConfig().getBoolean("shouldWorkWithHexCode");
+        if (shouldWorkWithHexCode) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.hasPermission("commandspyplus.see")) {
+                    boolean wantsToSeeCommands = playerDataConfig.getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
+                    if (wantsToSeeCommands) {
+                        onlinePlayer.sendMessage(ColorUtils.color(newFormat));
                     }
                 }
-            } else {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    if (onlinePlayer.hasPermission("commandspyplus.see")) {
-                        boolean wantsToSeeCommands = playerDataConfig.getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
-                        if (wantsToSeeCommands) {
-                            onlinePlayer.spigot().sendMessage(formatted);
-                        }
+            }
+        } else {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.hasPermission("commandspyplus.see")) {
+                    boolean wantsToSeeCommands = playerDataConfig.getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
+                    if (wantsToSeeCommands) {
+                        onlinePlayer.spigot().sendMessage(formatted);
                     }
                 }
             }
