@@ -47,8 +47,6 @@ public class CommandSpyListener implements Listener {
                 .replace("%player%", player.getName())
                 .replace("%command%", command);
 
-        FileConfiguration playerDataConfig = PlayerData.getPlayerDataConfig(plugin, player.getUniqueId());
-
         TextComponent formatted = new TextComponent(ColorUtils.color(newFormat));
         formatted.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
         formatted.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -58,7 +56,7 @@ public class CommandSpyListener implements Listener {
         if (shouldWorkWithHexCode) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (onlinePlayer.hasPermission("commandspyplus.see")) {
-                    boolean wantsToSeeCommands = playerDataConfig.getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
+                    boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
                     if (wantsToSeeCommands) {
                         onlinePlayer.sendMessage(ColorUtils.color(newFormat));
                     }
@@ -67,7 +65,7 @@ public class CommandSpyListener implements Listener {
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (onlinePlayer.hasPermission("commandspyplus.see")) {
-                    boolean wantsToSeeCommands = playerDataConfig.getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
+                    boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
                     if (wantsToSeeCommands) {
                         onlinePlayer.spigot().sendMessage(formatted);
                     }
