@@ -7,3 +7,6 @@ description: wanna see what commands your player's are executing? Well now you c
 commands:
   commandspyplus:
     aliases: csp
+  commandspyadmin:
+    aliases:
+      - cspadmin

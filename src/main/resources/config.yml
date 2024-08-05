@@ -21,10 +21,16 @@ format: '&b[CSP] → &a%player% %command%'
 enabled: '&aCommand Spy Plus was enabled'
 disabled: '&cCommand Spy Plus was disabled'
 
+maxLogDays: 30
+
 reload-message: '&bCommand Spy Plus was successfully reloaded &7(%time%ms)'
 no-permission: '&cYou don*t have the permission to execute this command!'
-ignored-commands: []
+ignored-commands:
+  - '/cspadmin'
 
 # Permissions:
-# commandspyplus.command.use
-# commandspyplus.see
+# commandspyplus.command.main
+# commandspyplus.command.cspadmin
+# commandspyplus.event.see
+# commandspyplus.event.hide
+

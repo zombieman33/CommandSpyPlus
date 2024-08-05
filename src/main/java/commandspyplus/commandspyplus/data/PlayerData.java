@@ -91,4 +91,42 @@ public class PlayerData {
         playerDataCache.remove(player.getUniqueId());
     }
 
+    public static boolean checkPlayerExist(CommandSpyPlus plugin, String playerName) {
+        File playerDataFolder = new File(plugin.getDataFolder(), DATA_FOLDER_NAME);
+        if (playerDataFolder.exists() &&  playerDataFolder.isDirectory()) {
+            for (File playerFile : playerDataFolder.listFiles()) {
+                FileConfiguration data = YamlConfiguration.loadConfiguration(playerFile);
+                String name = data.getString("commandSpyPlus.player." + playerFile.getName().replace(".yml", "") + ".ign");
+                if (playerName.equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public static FileConfiguration getPlayerDataConfigByName(CommandSpyPlus plugin, String playerName) {
+        File playerDataFolder = new File(plugin.getDataFolder(), DATA_FOLDER_NAME);
+        if (playerDataFolder.exists() &&  playerDataFolder.isDirectory()) {
+            for (File playerFile : playerDataFolder.listFiles()) {
+                FileConfiguration data = YamlConfiguration.loadConfiguration(playerFile);
+                String name = data.getString("commandSpyPlus.player." + playerFile.getName().replace(".yml", "") + ".ign");
+                if (playerName.equalsIgnoreCase(name)) {
+                    return getPlayerDataConfig(plugin, UUID.fromString(playerFile.getName().replace(".yml", "")));
+                }
+            }
+        }
+        return null;
+    }
+    public static void savePlayerDataByName(CommandSpyPlus plugin, String playerName) {
+        File playerDataFolder = new File(plugin.getDataFolder(), DATA_FOLDER_NAME);
+        if (playerDataFolder.exists() && playerDataFolder.isDirectory()) {
+            for (File playerFile : playerDataFolder.listFiles()) {
+                FileConfiguration data = YamlConfiguration.loadConfiguration(playerFile);
+                String name = data.getString("commandSpyPlus.player." + playerFile.getName().replace(".yml", "") + ".ign");
+                if (playerName.equalsIgnoreCase(name)) {
+                    savePlayerData(plugin, UUID.fromString(playerFile.getName().replace(".yml", "")));
+                }
+            }
+        }
+    }
 }

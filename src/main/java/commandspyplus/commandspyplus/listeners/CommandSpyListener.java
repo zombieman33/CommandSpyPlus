@@ -1,24 +1,24 @@
 package commandspyplus.commandspyplus.listeners;
 
 import commandspyplus.commandspyplus.CommandSpyPlus;
+import commandspyplus.commandspyplus.data.LogData;
 import commandspyplus.commandspyplus.data.PlayerData;
+import commandspyplus.commandspyplus.manager.HideManager;
+import commandspyplus.commandspyplus.modes.HiddenModes;
 import commandspyplus.commandspyplus.utils.ColorUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.io.File;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 public class CommandSpyListener implements Listener {
     private final CommandSpyPlus plugin;
@@ -31,6 +31,16 @@ public class CommandSpyListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String command = event.getMessage().split(" ")[0];
+
+        HideManager manager = plugin.getHideManager();
+        HiddenModes mode = manager.getHiddenMode();
+
+        LogData.addLog(plugin, event.getMessage() + " run by: " + player.getName() + ". Mode: " + mode.name());
+
+        if (mode == HiddenModes.PERMISSION && player.hasPermission("commandspyplus.event.hide")) return;
+
+        if (mode == HiddenModes.PERSON && manager.getPlayerHidden(player.getName())) return;
+
 
         List<String> ignoredCommands = plugin.getConfig().getStringList("ignored-commands");
 
@@ -55,7 +65,7 @@ public class CommandSpyListener implements Listener {
         boolean shouldWorkWithHexCode = plugin.getConfig().getBoolean("shouldWorkWithHexCode");
         if (shouldWorkWithHexCode) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.hasPermission("commandspyplus.see")) {
+                if (onlinePlayer.hasPermission("commandspyplus.event.see")) {
                     boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
                     if (wantsToSeeCommands) {
                         onlinePlayer.sendMessage(ColorUtils.color(newFormat));
@@ -64,7 +74,7 @@ public class CommandSpyListener implements Listener {
             }
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (onlinePlayer.hasPermission("commandspyplus.see")) {
+                if (onlinePlayer.hasPermission("commandspyplus.event.see")) {
                     boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
                     if (wantsToSeeCommands) {
                         onlinePlayer.spigot().sendMessage(formatted);

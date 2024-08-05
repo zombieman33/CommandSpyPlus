@@ -42,7 +42,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
         FileConfiguration playerDataConfig = PlayerData.getPlayerDataConfig(plugin, player.getUniqueId());
 
 
-        if (player.hasPermission("commandspyplus.command.use")) {
+        if (player.hasPermission("commandspyplus.command.main")) {
             String pName = player.getName();
             UUID pUUID = player.getUniqueId();
             boolean wantsEnable = playerDataConfig.getBoolean("commandSpyPlus.player." + pUUID + ".csp", false);
@@ -144,14 +144,6 @@ public class MainCommands implements CommandExecutor, TabCompleter {
         }
         return false;
     }
-
-    private void savePlayerDataConfig(FileConfiguration config, File configFile) {
-        try {
-            config.save(configFile);
-        } catch (IOException e) {
-            throw new RuntimeException("An error occurred while saving the player data config.", e);
-        }
-    }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completions = new ArrayList<>();
@@ -159,7 +151,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length == 1) {
-            if (player.hasPermission("commandspyplus.command.use")) {
+            if (player.hasPermission("commandspyplus.command.main")) {
                 completions.add("help");
                 completions.add("add-command");
                 completions.add("remove-command");
@@ -169,7 +161,7 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                 completions.add("disable");
             }
         } else if (args.length == 2) {
-            if (player.hasPermission("commandspyplus.command.use")) {
+            if (player.hasPermission("commandspyplus.command.main")) {
                 if (args[0].equalsIgnoreCase("reset")) {
                     completions.add("config.yml");
                 } else if (args[0].equalsIgnoreCase("add-command")) {
@@ -184,8 +176,8 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        String lastArg = args[args.length - 1];
-        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
+        String lastArg = args[args.length - 1].toLowerCase();
+        return completions.stream().filter(s -> s.toLowerCase().startsWith(lastArg.toLowerCase())).collect(Collectors.toList());
     }
 
     private void csp(Player player, @Nullable Boolean csp) {
