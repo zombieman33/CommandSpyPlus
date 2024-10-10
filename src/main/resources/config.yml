@@ -5,6 +5,8 @@
 # the command, %command% is the command
 # that got run, %time% is how long
 # it took to reload in milliseconds.
+# %world% is what would the player was
+# when they ran the command.
 
 # The ignored commands has to be
 # with a slash in the start,

@@ -55,7 +55,8 @@ public class CommandSpyListener implements Listener {
         String format = plugin.getConfig().getString("format");
         String newFormat = format
                 .replace("%player%", player.getName())
-                .replace("%command%", command);
+                .replace("%command%", command)
+                .replace("%world%", player.getWorld().getName());
 
         TextComponent formatted = new TextComponent(ColorUtils.color(newFormat));
         formatted.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
