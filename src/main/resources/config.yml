@@ -15,10 +15,20 @@
 
 # * gets replaced with '
 
-# `shouldWorkWithHexCode` means that hex code
-# will work but the suggest command wont
-shouldWorkWithHexCode: false
-format: '&b[CSP] → &a%player% %command%'
+format: '&#0084FF[%server-name%] &r&7→ &#0084FF%player%: &#0070D9%command%'
+
+# FOR THE SERVER NAME TO WORK YOU NEED TO HAVE A
+# WORKING REDIS DATABASE!
+serverName: "Server Name"
+
+database:
+  redis:
+    use: true
+    channel: "CSP"
+    host: example.com
+    port: port
+    username: username
+    password: password1234
 
 enabled: '&aCommand Spy Plus was enabled'
 disabled: '&cCommand Spy Plus was disabled'
