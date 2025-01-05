@@ -66,6 +66,9 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+
+        if (!plugin.shouldUseDatabase()) return;
+
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             plugin.getPlayerCache().forget(event.getPlayer().getUniqueId());
         });

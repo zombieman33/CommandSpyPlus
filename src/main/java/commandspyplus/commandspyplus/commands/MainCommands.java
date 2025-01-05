@@ -179,10 +179,18 @@ public class MainCommands implements CommandExecutor, TabCompleter {
                         completions.addAll(ignoredCommands);
                     }
                 } else if (args[0].equalsIgnoreCase("disable")) {
+                    if (!plugin.shouldUseDatabase()) {
+                        completions.add("(This feature is only available when you enable database management!)");
+                        return completions;
+                    }
                     Collection<ServerData> servers = plugin.getServerListCache().getServers();
                     completions.addAll(servers.stream().map(ServerData::getServerID).collect(Collectors.toList()));
 
                 } else if (args[0].equalsIgnoreCase("enable")) {
+                    if (!plugin.shouldUseDatabase()) {
+                        completions.add("(This feature is only available when you enable database management!)");
+                        return completions;
+                    }
                     String servers = plugin.getPlayerCache().getServers(player.getUniqueId());
                     if (servers == null) return completions;
 

@@ -15,18 +15,28 @@
 
 # * gets replaced with '
 
+# Hex code format: &#FFFFFF
+# THE FORMAT WORKS WITH HEX CODES AND COLOR CODES!
+
+# Format placeholders:
+# Player's name: %player%
+# Command: %command%
+# Server Name: %server-name%
+# World: %world%
+
 format: '&#0084FF[%server-name%] &r&7→ &#0084FF%player%: &#0070D9%command%'
 
-# FOR THE SERVER NAME TO WORK YOU NEED TO HAVE A
+# FOR THE SERVER NAME TO WORK
+# CROSS SERVER YOU NEED TO HAVE A
 # WORKING REDIS DATABASE!
 serverName: "Server Name"
 
 # IF THIS PLACEHOLDER IS 0 THE USERNAME WILL NOT
 # BE UPDATED ON JOIN, IF THE USER IS FOR EXAMPLE NICKED.
-placeholder: "%fewernick_isnicked%"
+placeholder: "%example_isnicked%"
 
 database:
-  use: true
+  use: false
   mysql:
     username: username
     password: null
