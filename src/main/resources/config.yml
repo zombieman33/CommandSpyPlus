@@ -21,9 +21,17 @@ format: '&#0084FF[%server-name%] &r&7→ &#0084FF%player%: &#0070D9%command%'
 # WORKING REDIS DATABASE!
 serverName: "Server Name"
 
+# IF THIS PLACEHOLDER IS 0 THE USERNAME WILL NOT
+# BE UPDATED ON JOIN, IF THE USER IS FOR EXAMPLE NICKED.
+placeholder: "%fewernick_isnicked%"
+
 database:
+  use: true
+  mysql:
+    username: username
+    password: null
+    url: example.com
   redis:
-    use: true
     channel: "CSP"
     host: example.com
     port: port

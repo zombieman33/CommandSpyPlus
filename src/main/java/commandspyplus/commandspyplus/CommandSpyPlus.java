@@ -4,17 +4,28 @@ import commandspyplus.commandspyplus.commands.AdminCmd;
 import commandspyplus.commandspyplus.commands.MainCommands;
 import commandspyplus.commandspyplus.data.LogData;
 import commandspyplus.commandspyplus.data.PlayerData;
+import commandspyplus.commandspyplus.data.cache.PlayerSettingsCache;
+import commandspyplus.commandspyplus.data.cache.ServerListCache;
+import commandspyplus.commandspyplus.data.mysql.PlayerDatabase;
+import commandspyplus.commandspyplus.data.mysql.ServerDatabase;
 import commandspyplus.commandspyplus.data.redis.RedisSubscriber;
 import commandspyplus.commandspyplus.listeners.CommandSpyListener;
 import commandspyplus.commandspyplus.listeners.JoinListener;
 import commandspyplus.commandspyplus.manager.HideManager;
+import commandspyplus.commandspyplus.utils.ServerNameUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public final class CommandSpyPlus extends JavaPlugin {
 
@@ -22,6 +33,12 @@ public final class CommandSpyPlus extends JavaPlugin {
     private HideManager hideManager;
     private JedisPool jedisPool;
     private Thread redisSubscriberThread;
+    private PlayerDatabase playerDatabase;
+    private ServerDatabase serverDatabase;
+    private PlayerSettingsCache playerSettingsCache;
+    private ServerListCache serverListCache;
+
+    public final UUID sessionID = UUID.randomUUID();
     private volatile boolean running = true;
 
 
@@ -41,8 +58,36 @@ public final class CommandSpyPlus extends JavaPlugin {
         // Configs
         saveDefaultConfig();
 
-        boolean redisUse = getConfig().getBoolean("database.redis.use");
-        if (redisUse) {
+        // Check for PlaceholderAPI
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getLogger().warning("-----------------------------------------");
+            getLogger().warning("WARNING");
+            getLogger().warning("PlaceholderAPI plugin is not installed!");
+            getLogger().warning(this.getPluginMeta().getName() + " is now being disabled!");
+            getLogger().warning("-----------------------------------------");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        boolean use = getConfig().getBoolean("database.use");
+        if (use) {
+
+            // Initialize MySQL connection
+            try {
+                String url = getConfig().getString("database.mysql.url");
+                String username = getConfig().getString("database.mysql.username");
+                String password = getConfig().getString("database.mysql.password");
+                playerDatabase = new PlayerDatabase(url, username, password);
+                serverDatabase = new ServerDatabase(this, url, username, password);
+
+                getLogger().info("Connected to MySQL database");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                getLogger().severe("Failed to connect to MySQL database! Disabling plugin.");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
+
             String redisHost = getConfig().getString("database.redis.host");
             int redisPort = getConfig().getInt("database.redis.port");
             String redisPassword = getConfig().getString("database.redis.password", null);
@@ -71,9 +116,21 @@ public final class CommandSpyPlus extends JavaPlugin {
                 }
             });
             redisSubscriberThread.start();
+            getLogger().info("Connected to Redis server");
+
+            playerSettingsCache = new PlayerSettingsCache(playerDatabase);
+            serverListCache = new ServerListCache(serverDatabase);
+
+            serverListCache.fetchServers();
+
+            Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    playerSettingsCache.fetchBoth(player.getUniqueId());
+                }
+            });
+
         }
 
-        getLogger().info("Connected to Redis server");
 
         // Commands
         MainCommands mainCommands = new MainCommands(this);
@@ -100,8 +157,8 @@ public final class CommandSpyPlus extends JavaPlugin {
         return hideManager;
     }
 
-    public boolean shouldUseRedis() {
-        return getConfig().getBoolean("database.redis.use");
+    public boolean shouldUseDatabase() {
+        return getConfig().getBoolean("database.use");
     }
     public String getChannel() {
         return getConfig().getString("database.redis.channel", "CSP");
@@ -113,19 +170,39 @@ public final class CommandSpyPlus extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (jedisPool != null) {
-            jedisPool.close();
-            getLogger().info("Redis connection pool closed.");
-        }
-        running = false;
-        if (redisSubscriberThread != null && redisSubscriberThread.isAlive()) {
-            redisSubscriberThread.interrupt();
-            try {
-                redisSubscriberThread.join(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+        if (shouldUseDatabase()) {
+
+            if (jedisPool != null) {
+                jedisPool.close();
+                getLogger().info("Redis connection pool closed.");
+            }
+            running = false;
+            if (redisSubscriberThread != null && redisSubscriberThread.isAlive()) {
+                redisSubscriberThread.interrupt();
+                try {
+                    redisSubscriberThread.join(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    public PlayerDatabase getPlayerDatabase() {
+        return playerDatabase;
+    }
+
+    public ServerDatabase getServerDatabase() {
+        return serverDatabase;
+    }
+
+    public PlayerSettingsCache getPlayerCache() {
+        return playerSettingsCache;
+    }
+
+    public ServerListCache getServerListCache() {
+        return serverListCache;
     }
 
     public String getServerName() {

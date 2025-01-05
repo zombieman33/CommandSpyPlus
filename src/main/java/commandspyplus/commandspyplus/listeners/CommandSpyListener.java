@@ -5,22 +5,18 @@ import commandspyplus.commandspyplus.data.LogData;
 import commandspyplus.commandspyplus.data.PlayerData;
 import commandspyplus.commandspyplus.manager.HideManager;
 import commandspyplus.commandspyplus.modes.HiddenModes;
-import commandspyplus.commandspyplus.utils.ColorUtils;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import redis.clients.jedis.Jedis;
 
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 
@@ -69,10 +65,11 @@ public class CommandSpyListener implements Listener {
                 .clickEvent(ClickEvent.suggestCommand(command))
                 .hoverEvent(HoverEvent.showText(MiniMessage.miniMessage().deserialize("<green>Click To Suggest: " + command)));
 
-        if (!plugin.shouldUseRedis()) {
+        if (!plugin.shouldUseDatabase()) {
 
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 if (!onlinePlayer.hasPermission("commandspyplus.event.see")) continue;
+
                 boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
                 if (!wantsToSeeCommands) continue;
 

@@ -2,10 +2,12 @@ package commandspyplus.commandspyplus.data.redis;
 
 import commandspyplus.commandspyplus.CommandSpyPlus;
 import commandspyplus.commandspyplus.data.PlayerData;
+import commandspyplus.commandspyplus.utils.ServerNameUtil;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -13,13 +15,13 @@ import org.bukkit.entity.Player;
 import redis.clients.jedis.JedisPubSub;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
-
-import static commandspyplus.commandspyplus.listeners.CommandSpyListener.SERIALIZER;
-
 public class RedisSubscriber extends JedisPubSub {
     private final CommandSpyPlus plugin;
+    public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.legacyAmpersand().toBuilder().hexColors().build();
 
     public RedisSubscriber(CommandSpyPlus plugin) {
         this.plugin = plugin;
@@ -67,11 +69,23 @@ public class RedisSubscriber extends JedisPubSub {
 
 
         for (Player player : Bukkit.getOnlinePlayers()) {
+
             if (!player.hasPermission("commandspyplus.event.see")) continue;
 
-            boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, player.getUniqueId()).getBoolean("commandSpyPlus.player." + player.getUniqueId() + ".csp");
+            UUID uuid = player.getUniqueId();
 
+            boolean wantsToSeeCommands = plugin.getPlayerCache().getEnabled(uuid);
             if (!wantsToSeeCommands) continue;
+
+            String servers = plugin.getPlayerCache().getServers(uuid);
+
+            List<String> serverList = new ArrayList<>();
+
+            if (servers != null) {
+                serverList.addAll(ServerNameUtil.fromString(servers.toLowerCase()));
+            }
+
+            if (serverList.contains(serverName.toLowerCase())) continue;
 
             player.sendMessage(component);
         }
