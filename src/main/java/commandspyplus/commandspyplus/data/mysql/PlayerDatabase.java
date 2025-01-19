@@ -1,6 +1,5 @@
 package commandspyplus.commandspyplus.data.mysql;
 
-
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -90,46 +89,5 @@ public class PlayerDatabase {
         data.setEnable(false);
         data.setUsername(username);
         dataDao.createOrUpdate(data);
-    }
-
-    public List<String> getAllUsernames() throws SQLException {
-        List<PlayerDataSQL> allData = dataDao.queryForAll();
-
-        List<String> usernames = new ArrayList<>();
-
-        for (PlayerDataSQL data : allData) {
-            usernames.add(data.getUsername());
-        }
-
-        return usernames;
-    }
-
-    public UUID getUuidByUsername(String username) throws SQLException {
-        List<PlayerDataSQL> result = dataDao.queryForEq("username", username);
-
-        if (!result.isEmpty()) {
-            return UUID.fromString(result.get(0).getUuid());
-        }
-        return null;
-    }
-    public UUID getUuidByDiscordTag(String discordTag) throws SQLException {
-        List<PlayerDataSQL> result = dataDao.queryForEq("discordTag", discordTag);
-
-        if (!result.isEmpty()) {
-            System.out.println(UUID.fromString(result.get(0).getUuid()));
-            return UUID.fromString(result.get(0).getUuid());
-        }
-
-        return null;
-    }
-
-    public String getUsernameByDiscordTag(String discordTag) throws SQLException {
-        List<PlayerDataSQL> result = dataDao.queryForEq("discordTag", discordTag);
-
-        if (!result.isEmpty()) {
-            return result.get(0).getUsername();
-        }
-
-        return null;
     }
 }
