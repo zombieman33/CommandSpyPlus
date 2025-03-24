@@ -42,8 +42,6 @@ public class MainCommands implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        String pName = player.getName();
-        UUID pUUID = player.getUniqueId();
         if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("help")) {
                 player.sendMessage(ColorUtils.color("&#33FB13&lCommand Spy Plus"));

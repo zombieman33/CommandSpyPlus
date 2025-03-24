@@ -61,7 +61,6 @@ public class ServerDatabase {
     }
 
     public void start() {
-        System.out.println("Started server checking...");
         new BukkitRunnable() {
             @Override
             public void run() {

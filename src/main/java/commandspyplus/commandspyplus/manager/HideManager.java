@@ -36,10 +36,10 @@ public class HideManager {
     }
     public void setPlayerHidden(String name, boolean hidden) {
         FileConfiguration playerDataConfigByName = PlayerData.getPlayerDataConfigByName(plugin, name);
-        if (playerDataConfigByName != null) {
-            playerDataConfigByName.set("hidden", hidden);
-            PlayerData.savePlayerDataByName(plugin, name);
-        }
+        if (playerDataConfigByName == null) return;
+
+        playerDataConfigByName.set("hidden", hidden);
+        PlayerData.savePlayerDataByName(plugin, name);
     }
 
     public void setHiddenModeInConfig(HiddenModes mode) {

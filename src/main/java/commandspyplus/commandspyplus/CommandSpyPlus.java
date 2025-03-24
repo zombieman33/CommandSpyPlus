@@ -48,9 +48,7 @@ public final class CommandSpyPlus extends JavaPlugin {
 
         File playerDataFile = new File(getDataFolder(), "playerData.yml");
 
-        if (playerDataFile.exists()) {
-            playerDataFile.delete();
-        }
+        if (playerDataFile.exists()) playerDataFile.delete();
 
         PlayerData.initDataFolder(this);
         LogData.initLogsFolder(this);
@@ -72,7 +70,6 @@ public final class CommandSpyPlus extends JavaPlugin {
         boolean use = getConfig().getBoolean("database.use");
         if (use) {
 
-            // Initialize MySQL connection
             try {
                 String url = getConfig().getString("database.mysql.url");
                 String username = getConfig().getString("database.mysql.username");
@@ -171,22 +168,23 @@ public final class CommandSpyPlus extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        if (shouldUseDatabase()) {
+        if (!shouldUseDatabase()) return;
 
-            if (jedisPool != null) {
-                jedisPool.close();
-                getLogger().info("Redis connection pool closed.");
-            }
-            running = false;
-            if (redisSubscriberThread != null && redisSubscriberThread.isAlive()) {
-                redisSubscriberThread.interrupt();
-                try {
-                    redisSubscriberThread.join(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        if (jedisPool != null) {
+            jedisPool.close();
+            getLogger().info("Redis connection pool closed.");
+        }
+
+        running = false;
+        if (redisSubscriberThread != null && redisSubscriberThread.isAlive()) {
+            redisSubscriberThread.interrupt();
+            try {
+                redisSubscriberThread.join(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+
     }
 
     public PlayerDatabase getPlayerDatabase() {

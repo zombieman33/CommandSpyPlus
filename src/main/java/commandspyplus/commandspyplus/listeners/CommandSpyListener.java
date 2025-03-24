@@ -84,33 +84,5 @@ public class CommandSpyListener implements Listener {
         try (Jedis jedis = plugin.getJedisResource()) {
             jedis.publish(plugin.getChannel(), "MESSAGE:" + s + ":" + player.getName() + ":" + player.getWorld().getName() + ":" + plugin.getServerName());
         }
-
-//        TextComponent formatted = new TextComponent(ColorUtils.color(newFormat));
-//        formatted.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
-//        formatted.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-//                new ComponentBuilder("Click To Suggest: " + command).color(net.md_5.bungee.api.ChatColor.GRAY).italic(true).create()));
-//
-//
-//        boolean shouldWorkWithHexCode = plugin.getConfig().getBoolean("shouldWorkWithHexCode");
-//        if (shouldWorkWithHexCode) {
-//            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-//                if (onlinePlayer.hasPermission("commandspyplus.event.see")) {
-//                    boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
-//                    if (wantsToSeeCommands) {
-//                        onlinePlayer.sendMessage(ColorUtils.color(newFormat));
-//                    }
-//                }
-//            }
-//        } else {
-//            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-//                if (onlinePlayer.hasPermission("commandspyplus.event.see")) {
-//                    boolean wantsToSeeCommands = PlayerData.getPlayerDataConfig(plugin, onlinePlayer.getUniqueId()).getBoolean("commandSpyPlus.player." + onlinePlayer.getUniqueId() + ".csp");
-//                    if (wantsToSeeCommands) {
-//                        onlinePlayer.spigot().sendMessage(formatted);
-//                    }
-//                }
-//            }
-//        }
-
     }
 }

@@ -69,9 +69,7 @@ public class JoinListener implements Listener {
 
         if (!plugin.shouldUseDatabase()) return;
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            plugin.getPlayerCache().forget(event.getPlayer().getUniqueId());
-        });
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.getPlayerCache().forget(event.getPlayer().getUniqueId()));
     }
 
 }
