@@ -40,6 +40,7 @@ public final class CommandSpyPlus extends JavaPlugin {
 
     public final UUID sessionID = UUID.randomUUID();
     private volatile boolean running = true;
+    public boolean consoleCommands = false;
 
 
     @Override
@@ -148,6 +149,9 @@ public final class CommandSpyPlus extends JavaPlugin {
         hideManager = new HideManager(this);
         // Data
         new PlayerData();
+
+
+        consoleCommands = this.getConfig().getBoolean("allowConsoleCommands");
     }
 
     public HideManager getHideManager() {
