@@ -5,12 +5,14 @@ import commandspyplus.commandspyplus.data.LogData;
 import commandspyplus.commandspyplus.data.PlayerData;
 import commandspyplus.commandspyplus.manager.HideManager;
 import commandspyplus.commandspyplus.modes.HiddenModes;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -64,7 +66,7 @@ public class CommandSpyListener implements Listener {
 
         TextComponent component = SERIALIZER.deserialize(newFormat)
                 .clickEvent(ClickEvent.suggestCommand(command))
-                .hoverEvent(HoverEvent.showText(MiniMessage.miniMessage().deserialize("<green>Click To Suggest: " + command)));
+                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + command)));
 
         if (!plugin.shouldUseDatabase()) {
 
