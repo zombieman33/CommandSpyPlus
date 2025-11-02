@@ -3,6 +3,7 @@ package commandspyplus.commandspyplus.data.redis;
 import commandspyplus.commandspyplus.CommandSpyPlus;
 import commandspyplus.commandspyplus.data.PlayerData;
 import commandspyplus.commandspyplus.utils.ServerNameUtil;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -65,7 +66,7 @@ public class RedisSubscriber extends JedisPubSub {
 
         TextComponent component = SERIALIZER.deserialize(newFormat)
                 .clickEvent(ClickEvent.suggestCommand(decodedCommand))
-                .hoverEvent(HoverEvent.showText(MiniMessage.miniMessage().deserialize("<green>Click To Suggest: " + decodedCommand)));
+                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + command)));
 
 
         for (Player player : Bukkit.getOnlinePlayers()) {

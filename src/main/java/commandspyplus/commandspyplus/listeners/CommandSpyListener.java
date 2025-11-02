@@ -123,7 +123,7 @@ public class CommandSpyListener implements Listener {
 
         TextComponent component = SERIALIZER.deserialize(newFormat)
                 .clickEvent(ClickEvent.suggestCommand(command))
-                .hoverEvent(HoverEvent.showText(MiniMessage.miniMessage().deserialize("<green>Click To Suggest: " + command)));
+                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + command)));
 
         if (!plugin.shouldUseDatabase()) {
 
