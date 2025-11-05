@@ -64,9 +64,11 @@ public class CommandSpyListener implements Listener {
                 .replace("%world%", player.getWorld().getName())
                 .replace("%server-name%", plugin.getConfig().getString("serverName", "n/a"));
 
+        String formattedCommand = command.replace("§", "&");
+
         TextComponent component = SERIALIZER.deserialize(newFormat)
                 .clickEvent(ClickEvent.suggestCommand(command))
-                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + command)));
+                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + formattedCommand)));
 
         if (!plugin.shouldUseDatabase()) {
 
@@ -121,9 +123,11 @@ public class CommandSpyListener implements Listener {
                 .replace("%world%", "n/a")
                 .replace("%server-name%", plugin.getConfig().getString("serverName", "n/a"));
 
+        String formattedCommand = command.replace("§", "&");
+
         TextComponent component = SERIALIZER.deserialize(newFormat)
                 .clickEvent(ClickEvent.suggestCommand(command))
-                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + command)));
+                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + formattedCommand)));
 
         if (!plugin.shouldUseDatabase()) {
 

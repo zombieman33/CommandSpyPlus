@@ -64,9 +64,11 @@ public class RedisSubscriber extends JedisPubSub {
                 .replace("%world%", world)
                 .replace("%server-name%", serverName);
 
+        String formattedCommand = command.replace("§", "&");
+
         TextComponent component = SERIALIZER.deserialize(newFormat)
                 .clickEvent(ClickEvent.suggestCommand(decodedCommand))
-                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + command)));
+                .hoverEvent(HoverEvent.showText(Component.text(ChatColor.GREEN + "Click To Suggest: " + formattedCommand)));
 
 
         for (Player player : Bukkit.getOnlinePlayers()) {
